@@ -48,12 +48,3 @@ jobs:
 
       - name: Cleanup
         run: rm -f server.pem
-
-
-
-
-
-          EC2_HOST: ${{ secrets.HOST_DNS }}
-          EC2_USER: ${{ secrets.USERNAME }}
-          EC2_KEY: ${{ secrets.EC2_SSH_KEY }}
-          EC2_PORT: ${{ secrets.EC2_PORT }}
