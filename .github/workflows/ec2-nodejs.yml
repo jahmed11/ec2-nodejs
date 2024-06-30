@@ -20,17 +20,40 @@ jobs:
           EC2_KEY: ${{ secrets.EC2_SSH_KEY }}
           EC2_PORT: ${{ secrets.EC2_PORT }}
         run: |
+          # Create the SSH private key file from the EC2_KEY secret
           echo "${EC2_KEY}" > server.pem
+          
+          # Set the correct permissions on the private key file
           chmod 600 server.pem
+          
+          # SSH into the EC2 instance and execute the deployment commands
           ssh -o StrictHostKeyChecking=no -i server.pem -p ${EC2_PORT:-22} ${EC2_USER}@${EC2_HOST} 'bash -s' << 'EOF'
             cd ~/ec2-nodejs
+            
+            # Identify and kill the process running on port 3000, if any
             if lsof -t -i:3000; then
               kill -9 $(lsof -t -i:3000)
             fi
+            
+            # Pull the latest code from the main branch
             git pull origin main
-            node index.js
+            
+            # Install dependencies if needed
+            npm install
+            
+            # Run the application in the background
+            nohup node index.js > output.log 2>&1 &
           EOF
         continue-on-error: true
 
       - name: Cleanup
         run: rm -f server.pem
+
+
+
+
+
+          EC2_HOST: ${{ secrets.HOST_DNS }}
+          EC2_USER: ${{ secrets.USERNAME }}
+          EC2_KEY: ${{ secrets.EC2_SSH_KEY }}
+          EC2_PORT: ${{ secrets.EC2_PORT }}
