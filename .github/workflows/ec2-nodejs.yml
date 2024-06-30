@@ -24,6 +24,9 @@ jobs:
           chmod 600 server.pem
           ssh -o StrictHostKeyChecking=no -i server.pem -p ${EC2_PORT:-22} ${EC2_USER}@${EC2_HOST} 'bash -s' << 'EOF'
             cd ~/ec2-nodejs
+            if lsof -t -i:3000; then
+              kill -9 $(lsof -t -i:3000)
+            fi
             git pull origin main
             node index.js
           EOF
