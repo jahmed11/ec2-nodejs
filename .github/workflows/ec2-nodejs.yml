@@ -23,7 +23,7 @@ jobs:
           echo "${EC2_KEY}" > server.pem
           chmod 600 server.pem
           ssh -o StrictHostKeyChecking=no -i server.pem -p ${EC2_PORT:-22} ${EC2_USER}@${EC2_HOST} 'bash -s' << 'EOF'
-            cd /path/to/your/app
+            cd /ec2-nodejs/
             git pull origin main
             node index.js
           EOF
